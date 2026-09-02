@@ -25,6 +25,10 @@ h1, .brand {
     font-family: "Space Grotesk", -apple-system, sans-serif;
 }
 
+h2, .brand {
+    font-family: "Space Grotesk", -apple-system, sans-serif;
+}
+
 .container {
     max-width: 960px;
     margin: 0 auto;
@@ -176,6 +180,49 @@ h1, .brand {
     border-top: 1px solid var(--line);
 }
 
+.projects-header {
+    grid-area: header;
+    background-color: var(--line);
+    padding-top: 15px;
+    padding-right: 30px;
+    padding-left: 30px;
+    padding-bottom: 15px;
+    text-align: left;
+    font-size: 20px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-areas:
+        'header header header header header header'  
+        'left left middle middle right right';     /* grid-column-gap: 10px; - if you want gap between the columns */
+} 
+
+.left,
+.middle,
+.right {
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+
+/* Style the left column */
+.left {
+  grid-area: left;
+  background-color: var(--accent-dark);
+}
+
+/* Style the middle column */
+.middle {
+  background-color: var(--accent);
+  grid-area: middle;
+}
+
+/* Style the right column */
+.right {
+  background-color: bisque;
+  grid-area: right;
+}
+
 @media (max-width: 600px) {
     .hero-grid {
         grid-template-columns: 1fr;
@@ -192,4 +239,13 @@ h1, .brand {
     .social-links {
         justify-content: flex-start;
     }
+
+    .grid-container {
+    grid-template-areas: 
+      'header header header header header header' 
+      'left left left left left left' 
+      'middle middle middle middle middle middle' 
+      'right right right right right right' 
+      'footer footer footer footer footer footer';
+  }
 }
