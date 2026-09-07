@@ -8,7 +8,7 @@ Created : 01/09/2026
 
 ### Tugas 1
 
-1. Ya, saya menggunakan elemen <section>. Pada kasus ini untuk membuat bagian baru, yaitu 'Projects'. Dalam pembuatan suatu website statis, <section> ini membantu menandakan seksi baru di website dan sering disertakan dengan elemen 'header'. Elemen semantik seperti ini mendeskripsikan peran dari konten di dalamnya.
+1. Ya, saya menggunakan elemen 'section'. Pada kasus ini untuk membuat bagian baru, yaitu 'Projects'. Dalam pembuatan suatu website statis, 'section' ini membantu menandakan seksi baru di website dan sering disertakan dengan elemen 'header'. Elemen semantik seperti ini mendeskripsikan peran dari konten di dalamnya.
 2. Awalnya saat aspect ratio dipersempitkan, grid proyek yang saya buat kacau. Jadi, saya tambahkan ke bagian @media spesifikasi grid-container agar bisa adapt dengan ukuran layar yang lebih sempit/ada pada mobile device.
 3. Saya merasa sangat sulit untuk membuat perubahan pada elemen dan konten karena pada website static ini semuanya di-hard-code. Untuk kedepannya saya mau fitur di mana kita bisa bikin suatu template elemen yang kemudian bisa dimasukkan saat kita perlukan (seperti menambahkan tombol social links tanpa harus hard-code elemen baru, tinggal pake template aja)
 
