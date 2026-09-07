@@ -195,14 +195,14 @@ h2, .brand {
     display: grid;
     grid-template-areas:
         'header header header header header header'  
-        'left left middle middle right right';     /* grid-column-gap: 10px; - if you want gap between the columns */
+        'left left middle middle right right';
 } 
 
 .left,
 .middle,
 .right {
   padding: 10px;
-  height: 300px; /* Should be removed. Only for demonstration */
+  height: auto;
 }
 
 /* Style the left column */
@@ -221,6 +221,38 @@ h2, .brand {
 .right {
   background-color: bisque;
   grid-area: right;
+}
+
+.projects-content {
+    padding: 25px;
+}
+
+.projects-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    max-width: 300px;
+}
+
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.projects-image {
+    object-fit: contain;
+    width: 200px;
+    height: auto;
+    border-radius: var(--radius);
+}
+
+.projects-desc {
+    font-size: 14px;
+    color: var(--ink);
+    max-width: 400px;
+    margin-bottom: 10px;
 }
 
 @media (max-width: 600px) {
