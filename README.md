@@ -23,3 +23,9 @@ I made a new div to put contents inside of the grid boxes. Inside these divs I p
 The hardest part was figuring out how to size the images correctly. I ended up putting them all at a fixed size (width: 200px) even though I wanted them all to be the same size (in both height and width, like having the same frame in canva) and be aligned with each other.
 
 There are other minor problems I faced; for all of them, I searched google with the "-AI" tag to disable the Google AI Overview and tried finding a solution in the results. I also did not use any chatbots or LLMs.
+
+### Tugas 2
+
+1. saat user klik tombol untuk halaman (misalnya experiences di web saya), request ke api akan dikirim. urls.py (di main) akan tangkap request tersebut dan route nya ke halaman yang sesuai. views.py lalu ngirim request lagi untuk render halaman dari templates. models.py berfungsi sebagai perantara front-end dengan database. Ia menentukan apa saja objek dan fields yang direturn ke front-end untuk di-display.
+2. karena prinsip DRY. Kalau di hard-code langsung di template bakal memakan banyak waktu dan susah untuk diubah massal. Dengan menggunakan model dan database, kita hanya perlu mendefinisikan sekali dan bisa tambah/delete data yang setipe berkali-kali.
+3. makemigrations hanya melihat kode yang kita tulis dan menulis kode SQL yang sesuai untuk mengubah model database (jika ada perubahan). migrate lah yang mengaplikasikan perubahan tersebut (membuat atau mengubah tabelnya)
