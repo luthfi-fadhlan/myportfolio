@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS = ["https://luthfi-ahmad51-myportfolio.pws.cs.ui.ac.id/"]
+CSRF_TRUSTED_ORIGINS = ["https://luthfi-ahmad51-myportfolio.pws.cs.ui.ac.id"]
 
 ROOT_URLCONF = 'myportfolio.urls'
 
