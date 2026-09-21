@@ -15,30 +15,54 @@
         <section class="education-section" id="education">
             <div class="container">
                 <p class="section-kicker">Pendidikan saya sejauh ini</p>
-                <h1>Education</h1>
-
+                <div class="experience-header">
+                    <h1>Education</h1>
+                    <a href="{% url 'main:create_education' %}" class="button experience-add-button">
+                        <span aria-hidden="true">+</span>
+                        Tambah Pendidikan
+                    </a>
+                </div>
+                <form method="get" action="{% url 'main:show_education' %}" class="experience-search">
+                    <input type="search" name="institution" value="{{ institution_query }}"
+                        placeholder="Cari berdasarkan nama institusi" class="experience-search__input"
+                        aria-label="Cari berdasarkan nama institusi">
+                    <button type="submit" class="button">Cari</button>
+                </form>
                 <div class="education-grid">
                     {% for education in education_list %}
-                        <article class="education-card">
-                            <span class="education-category">
-                                {{ education.get_category_display }}
-                            </span>
-                            <h2>{{ education.institution }}</h2>
-                            <p class="education-degree-field">{{ education.degree }} : {{ education.field_of_study }}</p>
-                            {% if education.is_ongoing %}
-                                <p class="education-status">{{ education.get_year_started }} - current</p>
-                            {% else %}
-                                <p class="education-status">{{ education.get_year_started }} - {{ education.get_year_ended }}</p>
-                            {% endif %}
-                        </article>
-                    {% empty %}
-                        <p class="empty-state">
-                            Belum ada pendidikan yang ditambahkan.
+                    <article class="education-card">
+                        <span class="education-category">
+                            {{ education.get_category_display }}
+                        </span>
+                        <h2>{{ education.institution }}</h2>
+                        <p class="education-degree-field">{{ education.degree }} : {{ education.field_of_study }}</p>
+                        {% if education.is_ongoing %}
+                        <p class="education-status">{{ education.get_year_started }} - current</p>
+                        {% else %}
+                        <p class="education-status">{{ education.get_year_started }} - {{ education.get_year_ended }}
                         </p>
-                    {% endfor %}
+                        {% endif %}
+
+                        <div class="experience-card-actions">
+                            <div class="experience-actions">
+                                {% include "components/education_delete_modal.html" with education=education %}
+                            </div>
+                        </div>
+                    </article>
+                    {% empty %}
+                    {% if institution_query %}
+                    <p class="empty-state">
+                        Tidak ada pendidikan dari institusi tersebut.
+                    </p>
+                    {% else %}
+                    <p class="empty-state">
+                        Belum ada pendidikan yang ditambahkan.
+                        {% endif %}
+                        {% endfor %}
                 </div>
             </div>
-        </section>        
+            </div>
+        </section>
     </main>
     {% endblock content %}
 </body>

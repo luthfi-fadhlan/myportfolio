@@ -5,18 +5,19 @@
 
 <head>
     {% block meta %}
-    <title>Add Education - {{ name }}</title>
+    <title>Perbarui Pendidikan - {{ name }}</title>
     {% endblock meta %}
 </head>
 
 <body>
     {% block content %}
     <main>
-        <section class="experience-section">
+        <section class="education-section">
             <div class="container">
-                <h1>Add New Education</h1>
+                <h1>Perbarui Pendidikan</h1>
+                <p class="section-kicker">{{ education.institution }}</p>
                 <form method="post"
-                      action="{% url 'main:create_education' %}"
+                      action="{% url 'main:update_education' education.id %}"
                       class="experience-form">
                     {% csrf_token %}
                     {% for field in form %}
@@ -28,7 +29,7 @@
                             {% endfor %}
                         </div>
                     {% endfor %}
-                    <button type="submit" class="button">Tambah Pendidikan</button>
+                    <button type="submit" class="button">Simpan Perubahan</button>
                     <a href="{% url 'main:show_education' %}" class="button button-secondary">Batal</a>
                 </form>
             </div>

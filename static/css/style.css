@@ -595,6 +595,10 @@ h2, .brand {
     background: #b42318;
 }
 
+.button-neutral {
+    background: #6b6459;
+}
+
 @media (max-width: 600px) {
     .experience-header {
         align-items: flex-start;

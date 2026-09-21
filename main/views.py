@@ -65,9 +65,14 @@ def delete_experience(request, experience_id):
     return redirect("main:show_experience")
 
 def show_education(request):
+    institution_query = request.GET.get("institution", "").strip()
+    educations = Education.objects.all()
+    if institution_query:
+        educations = educations.filter(institution__icontains=institution_query)
     context = {
         "name": "Luthfi Ahmad Fadhlan",
-        "education_list": Education.objects.all(),
+        "education_list": educations,
+        "institution_query": institution_query,
     }
     return render(request, "education.html", context)
 
@@ -84,6 +89,16 @@ def create_education(request):
         "form": form,
     }
     return render(request, "education_form.html", context)
+
+def update_education(request, education_id):
+    education = get_object_or_404(Education, pk=education_id)
+    form = EducationForm(request.POST or None, instance=education)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Pendidikan berhasil diperbarui!")
+        return redirect("main:show_education")
+    context = {"name": "Luthfi Ahmad Fadhlan", "form": form, "education": education}
+    return render(request, "education_update_form.html", context)
 
 def delete_education(request, education_id):
     education = get_object_or_404(Education, pk=education_id)
@@ -105,12 +120,22 @@ def get_experiences_json(request):
     experiences_json = serializers.serialize("json", experiences)
     return HttpResponse(experiences_json, content_type="application/json")
 
+def update_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+    form = ExperienceForm(request.POST or None, instance=experience)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Pengalaman berhasil diperbarui!")
+        return redirect("main:show_experience")
+    context = {"name": "Luthfi Ahmad Fadhlan", "form": form, "experience": experience}
+    return render(request, "experience_update_form.html", context)
+
 def get_educations_json(request):
-    field_of_study_query = request.GET.get("field_of_study", "").strip()
+    institution_query = request.GET.get("institution", "").strip()
     educations = Education.objects.all()
 
-    if field_of_study_query:
-        educations = educations.filter(field_of_study__icontains=field_of_study_query)
+    if institution_query:
+        educations = educations.filter(institution__icontains=institution_query)
 
     educations_json = serializers.serialize("json", educations)
     return HttpResponse(educations_json, content_type="application/json")
