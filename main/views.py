@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render
 
 from main.models import Experience, Education
@@ -7,11 +9,14 @@ from main.forms import ExperienceForm, EducationForm
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.decorators import login_required
 from django.core import serializers
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 def show_main(request):
+    last_login = request.COOKIES.get('last_login', 'Belum ada sesi login / Cookie tidak ditemukan')
     context = {
         "name": "Luthfi Ahmad Fadhlan",
         "npm": "2506617203",
@@ -20,6 +25,7 @@ def show_main(request):
             "Mahasiswa Sistem Informasi Universitas Indonesia yang tertarik "
             "pada pengembangan perangkat lunak dan pendidikan."
         ),
+        "last_login": last_login,
     }
     return render(request, "index.html", context)
 
@@ -42,7 +48,11 @@ def show_experience(request):
     }
     return render(request, "experience.html", context)
 
+@login_required(login_url="/login/")
 def create_experience(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     form = ExperienceForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -56,7 +66,11 @@ def create_experience(request):
     }
     return render(request, "experience_form.html", context)
 
+@login_required(login_url="/login/")
 def delete_experience(request, experience_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     experience = get_object_or_404(Experience, pk=experience_id)
 
     if request.method == "POST":
@@ -78,6 +92,7 @@ def show_education(request):
     }
     return render(request, "education.html", context)
 
+@login_required(login_url="/login/")
 def create_education(request):
     form = EducationForm(request.POST or None)
 
@@ -92,7 +107,11 @@ def create_education(request):
     }
     return render(request, "education_form.html", context)
 
+@login_required(login_url="/login/")
 def update_education(request, education_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     education = get_object_or_404(Education, pk=education_id)
     form = EducationForm(request.POST or None, instance=education)
     if request.method == "POST" and form.is_valid():
@@ -102,7 +121,11 @@ def update_education(request, education_id):
     context = {"name": "Luthfi Ahmad Fadhlan", "form": form, "education": education}
     return render(request, "education_update_form.html", context)
 
+@login_required(login_url="/login/")
 def delete_education(request, education_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     education = get_object_or_404(Education, pk=education_id)
 
     if request.method == "POST":
@@ -119,10 +142,14 @@ def get_experiences_json(request):
     if title_query:
         experiences = experiences.filter(title__icontains=title_query)
 
-    experiences_json = serializers.serialize("json", experiences)
+    experiences_json = serializers.serialize("json", experiences, use_natural_foreign_keys=True)
     return HttpResponse(experiences_json, content_type="application/json")
 
+@login_required(login_url="/login/")
 def update_experience(request, experience_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     experience = get_object_or_404(Experience, pk=experience_id)
     form = ExperienceForm(request.POST or None, instance=experience)
     if request.method == "POST" and form.is_valid():
@@ -131,6 +158,16 @@ def update_experience(request, experience_id):
         return redirect("main:show_experience")
     context = {"name": "Luthfi Ahmad Fadhlan", "form": form, "experience": experience}
     return render(request, "experience_update_form.html", context)
+
+@login_required(login_url="/login/")
+def toggle_star_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+    if request.method == "POST":
+        if request.user in experience.starred_by.all():
+            experience.starred_by.remove(request.user)
+        else:
+            experience.starred_by.add(request.user)
+    return redirect("main:show_experience")
 
 def get_educations_json(request):
     institution_query = request.GET.get("institution", "").strip()
@@ -162,7 +199,9 @@ def login_user(request):
 
     if request.method == "POST" and form.is_valid():
         login(request, form.get_user())
-        return redirect("main:show_main")
+        response = redirect("main:show_main")
+        response.set_cookie('last_login', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        return response
 
     context = {
         "name": "Luthfi",
@@ -173,5 +212,9 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    return redirect("main:show_main")
+    response = redirect("main:show_main")
+    response.delete_cookie('last_login')
+    return response
+
+
 
