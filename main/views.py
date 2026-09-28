@@ -30,6 +30,9 @@ def show_main(request):
     return render(request, "index.html", context)
 
 
+def _is_editor(user):
+    return user.is_authenticated and user.groups.filter(name='Editor').exists()
+
 def show_experience(request):
     json_response = get_experiences_json(request)
 
@@ -44,7 +47,8 @@ def show_experience(request):
     context = {
         "name": "Luthfi Ahmad Fadhlan",
         "experience_list": experiences,
-        "title_ query": title_query
+        "title_query": title_query,
+        "is_editor": _is_editor(request.user),
     }
     return render(request, "experience.html", context)
 
@@ -89,6 +93,7 @@ def show_education(request):
         "name": "Luthfi Ahmad Fadhlan",
         "education_list": educations,
         "institution_query": institution_query,
+        "is_editor": _is_editor(request.user),
     }
     return render(request, "education.html", context)
 
@@ -109,7 +114,7 @@ def create_education(request):
 
 @login_required(login_url="/login/")
 def update_education(request, education_id):
-    if not request.user.is_superuser:
+    if not (request.user.is_superuser or _is_editor(request.user)):
         raise PermissionDenied
 
     education = get_object_or_404(Education, pk=education_id)
@@ -147,7 +152,7 @@ def get_experiences_json(request):
 
 @login_required(login_url="/login/")
 def update_experience(request, experience_id):
-    if not request.user.is_superuser:
+    if not (request.user.is_superuser or _is_editor(request.user)):
         raise PermissionDenied
 
     experience = get_object_or_404(Experience, pk=experience_id)

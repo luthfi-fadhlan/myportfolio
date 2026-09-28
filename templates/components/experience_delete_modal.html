@@ -5,6 +5,7 @@
        title="Perbarui pengalaman">
         Perbarui
     </a>
+    {% if user.is_superuser %}
     <button type="button"
             class="button button-danger"
             popovertarget="delete-experience-{{ experience.id }}"
@@ -12,6 +13,7 @@
             title="Hapus pengalaman">
         Hapus Pengalaman
     </button>
+    {% endif %}
 </p>
 <div id="delete-experience-{{ experience.id }}"
      class="experience-delete-modal"
