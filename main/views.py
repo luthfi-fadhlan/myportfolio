@@ -96,15 +96,10 @@ def delete_experience(request, experience_id):
     return redirect("main:show_experience")
 
 def show_education(request):
-    institution_query = request.GET.get("institution", "").strip()
-    educations = Education.objects.all()
-    if institution_query:
-        educations = educations.filter(institution__icontains=institution_query)
     context = {
         "name": "Luthfi Ahmad Fadhlan",
-        "education_list": educations,
-        "institution_query": institution_query,
         "is_editor": _is_editor(request.user),
+        "form": EducationForm(),
     }
     return render(request, "education.html", context)
 
@@ -208,8 +203,37 @@ def get_educations_json(request):
     if institution_query:
         educations = educations.filter(institution__icontains=institution_query)
 
-    educations_json = serializers.serialize("json", educations)
-    return HttpResponse(educations_json, content_type="application/json")
+    data = []
+    for education in educations:
+        data.append({
+            "pk": str(education.id),
+            "fields": {
+                "institution": education.institution,
+                "degree": education.degree,
+                "field_of_study": education.field_of_study,
+                "year_started": education.get_year_started(),
+                "year_ended": education.get_year_ended(),
+                "is_ongoing": education.is_ongoing,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
+
+@require_POST
+def create_education_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan pendidikan."},
+            status=403,
+        )
+    form = EducationForm(request.POST)
+    if form.is_valid():
+        education = form.save()
+        return JsonResponse(
+            {"message": "Pendidikan berhasil ditambahkan.", "pk": str(education.id)},
+            status=201,
+        )
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
 
 def register(request):
     form = UserCreationForm(request.POST or None)

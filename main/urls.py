@@ -10,6 +10,7 @@ from main.views import (
     toggle_star_experience,
     show_education,
     create_education,
+    create_education_ajax,
     update_education,
     delete_education,
     get_experiences_json,
@@ -36,6 +37,7 @@ urlpatterns = [
 
     path("education/", show_education, name="show_education"),
     path("education/create/", create_education, name="create_education"),
+    path("education/add-ajax/", create_education_ajax, name="create_education_ajax"),
     path("education/<uuid:education_id>/update/", update_education, name="update_education"),
     path("education/<uuid:education_id>/delete/", delete_education, name="delete_education"),
 
