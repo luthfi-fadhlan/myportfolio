@@ -21,5 +21,7 @@ from myportfolio.views import landing_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/', include('main.api_urls')),
+    path('api-auth/', include('rest_framework.urls')),
     path('', include("main.urls")),
 ]

@@ -38,12 +38,17 @@ def _is_editor(user):
 
 def show_experience(request):
     title_query = request.GET.get("title", "").strip()
+    experiences = Experience.objects.prefetch_related("starred_by").all()
+
+    if title_query:
+        experiences = experiences.filter(title__icontains=title_query)
 
     context = {
         "name": "Luthfi Ahmad Fadhlan",
         "title_query": title_query,
+        "experiences": experiences,
         "is_editor": _is_editor(request.user),
-        "form": ExperienceForm()
+        "form": ExperienceForm(),
     }
     return render(request, "experience.html", context)
 

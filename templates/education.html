@@ -63,8 +63,8 @@
 
     <script>
         // Konfigurasi
-        const BASE_EDUCATIONS_ENDPOINT = "{% url 'main:get_educations_json' %}";
-        const CREATE_EDUCATION_ENDPOINT = "{% url 'main:create_education_ajax' %}";
+        const BASE_EDUCATIONS_ENDPOINT = "{% url 'api:education-list' %}";
+        const CREATE_EDUCATION_ENDPOINT = "{% url 'api:education-list' %}";
         const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
         const IS_EDITOR = "{{ is_editor|yesno:'true,false' }}" === "true";
         let educationsAbortController;
@@ -115,15 +115,15 @@
 
         // Buat elemen card education
         function buildEducationCardElement(item) {
-            const education = item.fields;
-            const educationId = item.pk;
+            const education = item;
+            const educationId = item.id;
 
             const articleElement = document.createElement('article');
             articleElement.className = 'education-card';
 
             const updateUrl = "{% url 'main:update_education' '00000000-0000-0000-0000-000000000000' %}"
                 .replace('00000000-0000-0000-0000-000000000000', educationId);
-            const deleteUrl = "{% url 'main:delete_education' '00000000-0000-0000-0000-000000000000' %}"
+            const deleteUrl = "{% url 'api:education-detail' '00000000-0000-0000-0000-000000000000' %}"
                 .replace('00000000-0000-0000-0000-000000000000', educationId);
 
             const yearRange = education.is_ongoing
@@ -135,10 +135,9 @@
                 : '';
 
             const deleteHtml = IS_SUPERUSER
-                ? `<form method="post" action="${deleteUrl}" style="display:inline;">
+                ? `<form method="post" action="${deleteUrl}" class="api-delete-education-form" style="display:inline;">
                     {% csrf_token %}
-                    <button type="submit" class="button button-danger"
-                            onclick="return confirm('Yakin ingin menghapus pendidikan ini?');">
+                    <button type="submit" class="button button-danger">
                         Hapus Pendidikan
                     </button>
                 </form>`
@@ -193,6 +192,7 @@
                     educationData.forEach(item => {
                         gridContainer.appendChild(buildEducationCardElement(item));
                     });
+                    bindEducationActionListeners();
                     displayPageSection({ showGrid: true });
                 }
             } catch (error) {
@@ -242,6 +242,31 @@
 
         if (educationForm) {
             educationForm.addEventListener('submit', addEducation);
+        }
+
+        function bindEducationActionListeners() {
+            document.querySelectorAll('.api-delete-education-form').forEach((form) => {
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const shouldDelete = window.confirm('Yakin ingin menghapus pendidikan ini?');
+                    if (!shouldDelete) return;
+
+                    const response = await fetch(form.action, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (!response.ok) {
+                        showToast('Gagal', 'Pendidikan tidak dapat dihapus.', 'error');
+                        return;
+                    }
+
+                    fetchEducations(searchInput.value.trim());
+                });
+            });
         }
 
         // Search debouncing
