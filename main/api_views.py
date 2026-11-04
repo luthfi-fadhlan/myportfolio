@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from main.models import Education, Experience
 from main.permissions import IsPortfolioOwnerOrReadOnly
-from main.serializer import EducationSerializer, ExperienceSerializer
+from main.serializers import EducationSerializer, ExperienceSerializer
 
 
 @api_view(["GET", "HEAD", "POST"])
