@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from main.models import Education, Experience
-from main.permissions import IsPortfolioOwnerOrReadOnly
+from main.permissions import IsPortfolioOwnerOrEditorOrReadOnly, IsPortfolioOwnerOrReadOnly
 from main.serializers import EducationSerializer, ExperienceSerializer
 
 
@@ -19,7 +19,6 @@ def experience_list(request):
         experiences = Experience.objects.prefetch_related("starred_by").all()
         if title_query:
             experiences = experiences.filter(title__icontains=title_query)
-
         serializer = ExperienceSerializer(experiences, many=True, context={"request": request})
         return Response(serializer.data)
 
@@ -54,16 +53,28 @@ def experience_detail(request, experience_id):
     return Response(serializer.data)
 
 
+@api_view(["POST"])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def experience_star(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+    if request.user in experience.starred_by.all():
+        experience.starred_by.remove(request.user)
+    else:
+        experience.starred_by.add(request.user)
+    serializer = ExperienceSerializer(experience, context={"request": request})
+    return Response(serializer.data)
+
+
 @api_view(["GET", "HEAD", "POST"])
 @authentication_classes([SessionAuthentication])
-@permission_classes([IsPortfolioOwnerOrReadOnly])
+@permission_classes([IsPortfolioOwnerOrEditorOrReadOnly])
 def education_list(request):
     if request.method in ("GET", "HEAD"):
         institution_query = request.query_params.get("institution", "").strip()
-        educations = Education.objects.all()
+        educations = Education.objects.prefetch_related("starred_by").all()
         if institution_query:
             educations = educations.filter(institution__icontains=institution_query)
-
         serializer = EducationSerializer(educations, many=True, context={"request": request})
         return Response(serializer.data)
 
@@ -75,7 +86,7 @@ def education_list(request):
 
 @api_view(["GET", "HEAD", "PUT", "PATCH", "DELETE"])
 @authentication_classes([SessionAuthentication])
-@permission_classes([IsPortfolioOwnerOrReadOnly])
+@permission_classes([IsPortfolioOwnerOrEditorOrReadOnly])
 def education_detail(request, education_id):
     education = get_object_or_404(Education, pk=education_id)
 
@@ -101,12 +112,11 @@ def education_detail(request, education_id):
 @api_view(["POST"])
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
-def experience_star(request, experience_id):
-    experience = get_object_or_404(Experience, pk=experience_id)
-    if request.user in experience.starred_by.all():
-        experience.starred_by.remove(request.user)
+def education_star(request, education_id):
+    education = get_object_or_404(Education, pk=education_id)
+    if request.user in education.starred_by.all():
+        education.starred_by.remove(request.user)
     else:
-        experience.starred_by.add(request.user)
-
-    serializer = ExperienceSerializer(experience, context={"request": request})
+        education.starred_by.add(request.user)
+    serializer = EducationSerializer(education, context={"request": request})
     return Response(serializer.data)
